@@ -40,7 +40,7 @@ public class WebServiceConfig {
     public Endpoint CivilEndpoint(Bus bus, PcssCivilEndpoint pcssCivilEndpoint) {
 
         EndpointImpl endpoint = new EndpointImpl(bus, pcssCivilEndpoint);
-        endpoint.publish("/JusticePCSSCivil.wsProvider:pcssCivil");
+        endpoint.publish("JusticePCSSCivil.wsProvider.pcssCivil/JusticePCSSCivil_wsProvider_pcssCivil_Port");
 
         return endpoint;
     }

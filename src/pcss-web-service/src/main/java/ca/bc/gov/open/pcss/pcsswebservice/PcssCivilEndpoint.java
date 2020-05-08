@@ -2,6 +2,7 @@ package ca.bc.gov.open.pcss.pcsswebservice;
 
 
 import ca.bc.gov.courts.xml.ns.pcss.civil.v1.*;
+import ca.bc.gov.open.pcss.civil.Party;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -68,6 +69,26 @@ public class PcssCivilEndpoint implements PcssCivilPortType {
 
     @Override
     public GetAppearanceCivilPartyResponse2 getAppearanceCivilParty(GetAppearanceCivilPartyRequest getAppearanceCivilPartyRequest) {
-        return null;
+
+        GetAppearanceCivilPartyResponse2 response2 = new GetAppearanceCivilPartyResponse2();
+
+        ca.bc.gov.open.pcss.civil.GetAppearanceCivilPartyResponse response = new ca.bc.gov.open.pcss.civil.GetAppearanceCivilPartyResponse();
+
+        response.setResponseCd("0");
+        response.setResponseMessageTxt("yeah");
+
+        Party party = new Party();
+
+        party.setCounselNm("yo");
+        party.setCourtParticipantCcn("yo");
+        party.setCourtParticipantCcn("yeah");
+
+        response.getParty().add(party);
+
+
+        response2.setGetAppearanceCivilPartyResponse(response);
+
+        return response2;
+
     }
 }
