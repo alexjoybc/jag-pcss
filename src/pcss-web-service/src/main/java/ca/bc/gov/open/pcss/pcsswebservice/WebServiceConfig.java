@@ -1,6 +1,8 @@
 package ca.bc.gov.open.pcss.pcsswebservice;
 
 import org.apache.cxf.Bus;
+import org.apache.cxf.binding.BindingConfiguration;
+import org.apache.cxf.binding.soap.SoapBindingConfiguration;
 import org.apache.cxf.bus.spring.SpringBus;
 import org.apache.cxf.jaxws.EndpointImpl;
 import org.apache.cxf.transport.servlet.CXFServlet;
@@ -11,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
 import javax.xml.ws.Endpoint;
+import javax.xml.ws.soap.SOAPBinding;
 
 
 @Configuration
@@ -40,9 +43,10 @@ public class WebServiceConfig {
     public Endpoint CivilEndpoint(Bus bus, PcssCivilEndpoint pcssCivilEndpoint) {
 
         EndpointImpl endpoint = new EndpointImpl(bus, pcssCivilEndpoint);
+        endpoint.setBindingUri(SOAPBinding.SOAP12HTTP_BINDING);
         endpoint.publish("JusticePCSSCivil.wsProvider.pcssCivil/JusticePCSSCivil_wsProvider_pcssCivil_Port");
-
         return endpoint;
+
     }
 
     @Bean
