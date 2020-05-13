@@ -89,7 +89,40 @@ public class PcssCivilEndpoint implements PcssCivilPortType {
 
     @Override
     public GetFileDetailCivilResponse2 getFileDetailCivil(GetFileDetailCivilRequest getFileDetailCivilRequest) {
-        return null;
+
+        logger.debug("received new getFileDetailCivil");
+
+        GetFileDetailCivilResponse2 response2 = new GetFileDetailCivilResponse2();
+
+
+        if (getFileDetailCivilRequest.getGetFileDetailCivilRequest() != null) {
+            setMDC("getFileDetailCivil",
+                    getFileDetailCivilRequest.getGetFileDetailCivilRequest().getRequestAgencyIdentifierId(),
+                    getFileDetailCivilRequest.getGetFileDetailCivilRequest().getRequestPartId());
+        }
+
+        logger.debug("attempting to call ords api");
+
+        response2
+                .setGetFileDetailCivilResponse(
+                        FileDetailCivilResponseMapper
+                                .INSTANCE.toGetFileDetailCivilResponse(
+                                this.civilService.getFileDetailCivil(
+                                        getFileDetailCivilRequest.getGetFileDetailCivilRequest().getPhysicalFileId())));
+
+        if (response2.getGetFileDetailCivilResponse() != null
+                && isSuccessResponse(response2.getGetFileDetailCivilResponse().getResponseCd())) {
+            logger.info("successfully retrieved getGetFileDetailCivilRequest [{}]",
+                    getFileDetailCivilRequest.getGetFileDetailCivilRequest().getPhysicalFileId());
+        } else {
+            logger.error("error retrieving getGetFileDetailCivilRequest [{}], error: [{}]",
+                    response2.getGetFileDetailCivilResponse().getResponseCd(),
+                    response2.getGetFileDetailCivilResponse().getResponseMessageTxt());
+        }
+
+        cleanUpMDC();
+
+        return response2;
     }
 
     @Override
