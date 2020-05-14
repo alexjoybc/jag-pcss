@@ -2,10 +2,7 @@ package ca.bc.gov.open.pcss.ords.pcss.client.civil;
 
 import ca.bc.gov.open.pcss.ords.pcss.client.api.PcssCivilApi;
 import ca.bc.gov.open.pcss.ords.pcss.client.api.handler.ApiException;
-import ca.bc.gov.open.pcss.ords.pcss.client.api.model.CivilFileContentData;
-import ca.bc.gov.open.pcss.ords.pcss.client.api.model.CivilFileContentResponse;
-import ca.bc.gov.open.pcss.ords.pcss.client.api.model.SearchFileAppearanceIssueResponse;
-import ca.bc.gov.open.pcss.ords.pcss.client.api.model.SearchFileAppearanceResourcesResponse;
+import ca.bc.gov.open.pcss.ords.pcss.client.api.model.*;
 import ca.bc.gov.open.pcss.ords.pcss.client.civil.mappers.*;
 import ca.bc.gov.open.pcss.ords.pcss.client.civil.models.AppearanceDocumentResponse;
 import ca.bc.gov.open.pcss.ords.pcss.client.civil.models.FileContentResponse;
@@ -16,6 +13,7 @@ import java.util.Optional;
 
 public class CivilServiceImpl implements CivilService {
 
+    public static final BigDecimal SUCCESS_RESPONSE_CODE = BigDecimal.valueOf(0);
     private final PcssCivilApi pcssCivilApi;
 
     public CivilServiceImpl(PcssCivilApi pcssCivilApi) {
@@ -26,15 +24,17 @@ public class CivilServiceImpl implements CivilService {
 
         try {
 
-            AppearanceDocumentResponse result = AppearanceDocumentResponseMapper.INSTANCE.toAppearanceDocumentResponse(this
+            AppearanceDocumentResponse result =
+                    AppearanceDocumentResponseMapper.INSTANCE.toAppearanceDocumentResponse(this
                     .pcssCivilApi
                     .civilSearchFileAppearanceDocumentGet(appearanceId));
 
             result.getData().stream().forEach(document -> {
-                if(StringUtils.isNotBlank(document.getDocumentid())) {
-                    SearchFileAppearanceIssueResponse documentIsssues = getFileAppearanceDocumentIssue(appearanceId, document.getDocumentid());
+                if (StringUtils.isNotBlank(document.getDocumentid())) {
+                    SearchFileAppearanceIssueResponse documentIsssues = getFileAppearanceDocumentIssue(appearanceId,
+                            document.getDocumentid());
 
-                    if(documentIsssues.getResponseCd().equals(BigDecimal.valueOf(0))) {
+                    if (documentIsssues.getResponseCd().equals(SUCCESS_RESPONSE_CODE)) {
                         document.addAll(documentIsssues.getData());
                     }
                 }
@@ -73,23 +73,37 @@ public class CivilServiceImpl implements CivilService {
 
         try {
 
-            CivilFileContentResponse result =  this.pcssCivilApi.civilFileContentGet(physicalFileId);
+            CivilFileContentResponse result = this.pcssCivilApi.civilFileContentGet(physicalFileId);
 
-            if(result.getData() != null) {
+            if (result.getData() == null) return FileContentResponse.ErrorResponse("CivilFileContentData not found");
 
-                Optional<CivilFileContentData> firstItem = result.getData().stream().findFirst();
+            Optional<CivilFileContentData> firstItem = result.getData().stream().findFirst();
 
-                if(firstItem.isPresent()) {
-                    return FileContentResponseMapper.INSTANCE.toFileContentResponse(result, firstItem.get());
-                }
-            }
+            if (!firstItem.isPresent()) return FileContentResponse.ErrorResponse("CivilFileContentData not found");
 
-            return FileContentResponse.ErrorResponse("CivilFileContentData not found");
+            FileContentResponse response = FileContentResponseMapper.INSTANCE.toFileContentResponse(result,
+                    firstItem.get());
+
+            CivilFileContentPartyResponse civilFileContentPartyResponse = getCivilFileContentParty(physicalFileId);
+
+            if(civilFileContentPartyResponse != null && civilFileContentPartyResponse.getResponseCd().equals(SUCCESS_RESPONSE_CODE))
+                response.addAll(civilFileContentPartyResponse.getData());
+
+            return response;
+
 
         } catch (ApiException e) {
             return FileContentResponseMapper.INSTANCE.toFileContentResponse(e);
         }
 
+    }
+
+    private CivilFileContentPartyResponse getCivilFileContentParty(String physicalFileId) {
+        try {
+            return this.pcssCivilApi.civilFileContentPartyGet(physicalFileId);
+        } catch (ApiException e) {
+            return CivilFileContentPartyResponseMapper.INSTANCE.toCivilFileContentPartyResponse(e);
+        }
     }
 
 }

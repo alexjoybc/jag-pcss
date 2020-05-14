@@ -10,7 +10,7 @@ import org.mapstruct.Mapping;
 public interface PartyMapper {
 
     @Mapping(target = "partyId", source = "partyid")
-    @Mapping( target = "partyRoleTypeCd",source = "partyroletypecd")
+    @Mapping(target = "partyRoleTypeCd",source = "partyroletypecd")
     @Mapping(target = "lastNm", source = "lastnm")
     @Mapping(target = "givenNm", source = "givennm")
     @Mapping(target = "orgNm", source = "orgnm")

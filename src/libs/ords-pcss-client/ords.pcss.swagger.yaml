@@ -44,7 +44,7 @@ paths:
         '200':
           description: output of the endpoint
           schema:
-            $ref: '#/definitions/partyResults'
+            $ref: '#/definitions/civilFileContentPartyResponse'
       parameters:
       - name: physical_file_id
         in: query
@@ -672,10 +672,10 @@ definitions:
         type: string
       issueresultcd:
         type: string
-  partyResults:
+  civilFileContentPartyResponse:
     type: object
     properties:
-      party_data:
+      data:
         type: array
         items:
           $ref: '#/definitions/party_data'

@@ -7,7 +7,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(uses= { ObjectFactory.class, ApprDetailMapper.class } )
+@Mapper(uses= { ObjectFactory.class, Party3Mapper.class } )
 public interface FileDetailCivilResponseMapper {
 
     FileDetailCivilResponseMapper INSTANCE = Mappers.getMapper( FileDetailCivilResponseMapper.class );
@@ -23,6 +23,7 @@ public interface FileDetailCivilResponseMapper {
     @Mapping(target = "rightRoleDsc", source = "rightroledsc")
     @Mapping(target = "trialRemarkTxt", source = "trialremark")
     @Mapping(target = "commentToJudgeTxt", source = "commenttojudgetxt")
+    @Mapping(target = "party", source = "partyData")
     GetFileDetailCivilResponse toGetFileDetailCivilResponse(FileContentResponse fileContentResponse);
 
 }

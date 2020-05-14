@@ -3,28 +3,39 @@ package ca.bc.gov.open.pcss.ords.pcss.client.civil;
 import ca.bc.gov.open.pcss.ords.pcss.client.api.PcssCivilApi;
 import ca.bc.gov.open.pcss.ords.pcss.client.api.handler.ApiException;
 import ca.bc.gov.open.pcss.ords.pcss.client.api.model.CivilFileContentData;
+import ca.bc.gov.open.pcss.ords.pcss.client.api.model.CivilFileContentPartyResponse;
 import ca.bc.gov.open.pcss.ords.pcss.client.api.model.CivilFileContentResponse;
+import ca.bc.gov.open.pcss.ords.pcss.client.api.model.PartyData;
 import ca.bc.gov.open.pcss.ords.pcss.client.civil.models.FileContentResponse;
 import org.junit.jupiter.api.*;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import java.math.BigDecimal;
+
 @DisplayName("CivilService: gvilSearchFileAppearanceDocument test suite")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class CivilGetFileDetailCivilTest {
 
 
-    public static final String COMMENTTOJUDGETXT = "Commenttojudgetxt";
-    public static final String COURTCLASSCD = "Courtclasscd";
-    public static final String COURTLEVELCD = "Courtlevelcd";
-    public static final String FILENUMBERTXT = "Filenumbertxt";
-    public static final String HOMELOCATIONAGENTID = "Homelocationagentid";
-    public static final String LEFTROLEDSC = "Leftroledsc";
-    public static final String PHYSICALFILEID = "Physicalfileid";
-    public static final String RIGHTROLEDSC = "Rightroledsc";
-    public static final String SOCTXT = "Soctxt";
-    public static final String TRIALREMARK = "Trialremark";
+    private static final String COMMENTTOJUDGETXT = "Commenttojudgetxt";
+    private static final String COURTCLASSCD = "Courtclasscd";
+    private static final String COURTLEVELCD = "Courtlevelcd";
+    private static final String FILENUMBERTXT = "Filenumbertxt";
+    private static final String HOMELOCATIONAGENTID = "Homelocationagentid";
+    private static final String LEFTROLEDSC = "Leftroledsc";
+    private static final String PHYSICALFILEID = "Physicalfileid";
+    private static final String RIGHTROLEDSC = "Rightroledsc";
+    private static final String SOCTXT = "Soctxt";
+    private static final String TRIALREMARK = "Trialremark";
+    private static final String PARTYROLETYPE = "Partyroletype";
+    private static final BigDecimal PARTYID = BigDecimal.valueOf(1);
+    private static final String ORGNM = "Orgnm";
+    private static final String GIVENNM = "Givennm";
+    private static final String LASTNM = "Lastnm";
+    private static final String LEFTRIGHTCD = "Leftrightcd";
+    private static final String SELFREPRESENTEDYN = "Selfrepresentedyn";
     private CivilServiceImpl sut;
 
     @Mock
@@ -35,7 +46,7 @@ public class CivilGetFileDetailCivilTest {
 
         MockitoAnnotations.initMocks(this);
 
-        Mockito.when(pcssCivilApiMock.civilFileContentGet(TestHelpers.CASE_3)).thenThrow(TestHelpers.DEFAULT_EXCEPTION);
+        Mockito.when(pcssCivilApiMock.civilFileContentGet(TestHelpers.CASE_4)).thenThrow(TestHelpers.DEFAULT_EXCEPTION);
 
         sut = new CivilServiceImpl(pcssCivilApiMock);
     }
@@ -43,20 +54,26 @@ public class CivilGetFileDetailCivilTest {
     @DisplayName(TestHelpers.CASE_1 + ": When api return 1 document, should return first")
     @Test
     public void withOneDocumentShouldReturnResult() throws ApiException {
-        testSuccess(TestHelpers.CASE_1, 1);
+        testSuccess(TestHelpers.CASE_1, 1, 1, true);
     }
 
     @DisplayName(TestHelpers.CASE_2 + ": When api return 100 document, should return first only")
     @Test
     public void withMultipleDocumentShouldReturnResult() throws ApiException {
-        testSuccess(TestHelpers.CASE_2, 100);
+        testSuccess(TestHelpers.CASE_2, 100, 100, true);
     }
 
-    @DisplayName(TestHelpers.CASE_3 + ": When api error")
+    @DisplayName(TestHelpers.CASE_3 + ": When api return 100 document, should return first only")
+    @Test
+    public void withMultipleDocumentErrorPartyShouldReturnResult() throws ApiException {
+        testSuccess(TestHelpers.CASE_3, 100, 100, false);
+    }
+
+    @DisplayName(TestHelpers.CASE_4 + ": When api error")
     @Test
     public void withApiExceptionShouldReturnResult() throws ApiException {
 
-        FileContentResponse actual = sut.getFileDetailCivil(TestHelpers.CASE_3);
+        FileContentResponse actual = sut.getFileDetailCivil(TestHelpers.CASE_4);
 
         Assertions.assertEquals(TestHelpers.DEFAULT_ERROR_RESPONSE_CD, actual.getResponseCd());
         Assertions.assertEquals(TestHelpers.RESPONSE_BODY, actual.getResponseMsg());
@@ -73,11 +90,17 @@ public class CivilGetFileDetailCivilTest {
 
     }
 
-    private void testSuccess(String testCase, int documentCount) throws ApiException {
+    private void testSuccess(String testCase,
+                             int documentCount,
+                             int partyCount,
+                             boolean isPartySuccess) throws ApiException {
 
 
         Mockito.when(pcssCivilApiMock.civilFileContentGet(Mockito.eq(testCase)))
                 .thenReturn(getFakeResponse(documentCount));
+
+        Mockito.when(pcssCivilApiMock.civilFileContentPartyGet(Mockito.eq(testCase)))
+                .thenReturn(getFakePartyResponse(partyCount, isPartySuccess));
 
         FileContentResponse actual = sut.getFileDetailCivil(testCase);
 
@@ -94,6 +117,52 @@ public class CivilGetFileDetailCivilTest {
         Assertions.assertEquals(SOCTXT, actual.getSoctxt());
         Assertions.assertEquals(TRIALREMARK, actual.getTrialremark());
 
+        if (isPartySuccess) {
+
+            Assertions.assertEquals(partyCount, actual.getPartyData().size());
+
+            actual.getPartyData().stream().forEach(partyItem -> {
+
+                Assertions.assertEquals(PARTYROLETYPE, partyItem.getPartyroletype());
+                Assertions.assertEquals(PARTYID, partyItem.getPartyid());
+                Assertions.assertEquals(ORGNM, partyItem.getOrgnm());
+                Assertions.assertEquals(GIVENNM, partyItem.getGivennm());
+                Assertions.assertEquals(LASTNM, partyItem.getLastnm());
+                Assertions.assertEquals(LEFTRIGHTCD, partyItem.getLeftrightcd());
+                Assertions.assertEquals(SELFREPRESENTEDYN, partyItem.getSelfrepresentedyn());
+
+            });
+        } else {
+            Assertions.assertEquals(0, actual.getPartyData().size());
+        }
+
+    }
+
+    private CivilFileContentPartyResponse getFakePartyResponse(int partyCount, boolean isPartySuccess) {
+
+        CivilFileContentPartyResponse response = new CivilFileContentPartyResponse();
+        response.setResponseCd(isPartySuccess ? TestHelpers.SUCCESS_RESPONSE_CD :
+                TestHelpers.DEFAULT_ERROR_RESPONSE_CD);
+        response.setResponseMsg(isPartySuccess ? TestHelpers.SUCCESS_RESPONSE_MSG :
+                TestHelpers.DEFAULT_ERROR_RESPONSE_MSG);
+
+        for (int i = 0; i < partyCount; i++) {
+
+            PartyData item = new PartyData();
+
+            item.setPartyroletype(PARTYROLETYPE);
+            item.setPartyid(PARTYID);
+            item.setOrgnm(ORGNM);
+            item.setGivennm(GIVENNM);
+            item.setLastnm(LASTNM);
+            item.setLeftrightcd(LEFTRIGHTCD);
+            item.setSelfrepresentedyn(SELFREPRESENTEDYN);
+
+            response.addDataItem(item);
+
+        }
+
+        return response;
 
     }
 

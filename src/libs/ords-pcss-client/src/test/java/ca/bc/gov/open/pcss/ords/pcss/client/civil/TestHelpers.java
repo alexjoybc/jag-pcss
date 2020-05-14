@@ -15,10 +15,12 @@ public class TestHelpers {
     public static final BigDecimal SUCCESS_RESPONSE_CD =  BigDecimal.valueOf(0);
     public static final BigDecimal DEFAULT_ERROR_RESPONSE_CD =  BigDecimal.valueOf(-1);
     public static final String SUCCESS_RESPONSE_MSG = "SUCCESS";
+    public static final String DEFAULT_ERROR_RESPONSE_MSG = "ERROR";
 
 
     public static final String RESPONSE_BODY = "exception";
     public static final ApiException DEFAULT_EXCEPTION = new ApiException(400, null, null, RESPONSE_BODY);
+
 
 
 }
