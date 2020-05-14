@@ -2,7 +2,7 @@ package ca.bc.gov.open.pcss.pcsswebservice.civil.mappers;
 
 import ca.bc.gov.open.pcss.civil.ObjectFactory;
 import ca.bc.gov.open.pcss.civil.Party3;
-import ca.bc.gov.open.pcss.ords.pcss.client.api.model.PartyData;
+import ca.bc.gov.open.pcss.ords.pcss.client.civil.models.ExtendedPartyData;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -17,6 +17,6 @@ public interface Party3Mapper {
     @Mapping(target = "roleTypeCd", source = "partyroletype")
     @Mapping(target = "leftRightCd", source = "leftrightcd")
     @Mapping(target = "selfRepresentedYN", source = "selfrepresentedyn")
-    Party3 toParty3(PartyData partyData);
+    Party3 toParty3(ExtendedPartyData partyData);
 
 }

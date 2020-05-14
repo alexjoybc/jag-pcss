@@ -1,15 +1,13 @@
 package ca.bc.gov.open.pcss.pcsswebservice.civil;
 
-import ca.bc.gov.courts.xml.ns.pcss.civil.v1.GetAppearanceCivilDocumentRequest;
-import ca.bc.gov.courts.xml.ns.pcss.civil.v1.GetAppearanceCivilDocumentResponse2;
 import ca.bc.gov.courts.xml.ns.pcss.civil.v1.GetFileDetailCivilRequest;
 import ca.bc.gov.courts.xml.ns.pcss.civil.v1.GetFileDetailCivilResponse2;
 import ca.bc.gov.courts.xmlschema.pcss.common._1_0.CourtClassType;
 import ca.bc.gov.courts.xmlschema.pcss.common._1_0.CourtLevelType;
 import ca.bc.gov.courts.xmlschema.pcss.common._1_0.LeftRightType;
 import ca.bc.gov.open.pcss.ords.pcss.client.api.PcssCivilApi;
-import ca.bc.gov.open.pcss.ords.pcss.client.api.model.PartyData;
 import ca.bc.gov.open.pcss.ords.pcss.client.civil.CivilService;
+import ca.bc.gov.open.pcss.ords.pcss.client.civil.models.ExtendedPartyData;
 import ca.bc.gov.open.pcss.ords.pcss.client.civil.models.FileContentResponse;
 import org.junit.jupiter.api.*;
 import org.mockito.Mock;
@@ -116,23 +114,21 @@ public class EndpointFileDetailCivilTest {
     @Test
     public void withErrorShouldReturnResult() {
 
-        GetAppearanceCivilDocumentRequest request = new GetAppearanceCivilDocumentRequest();
+        GetFileDetailCivilRequest request = new GetFileDetailCivilRequest();
 
-        ca.bc.gov.open.pcss.civil.GetAppearanceCivilDocumentRequest request2 = new ca.bc.gov.open.pcss.civil.GetAppearanceCivilDocumentRequest();
+        ca.bc.gov.open.pcss.civil.GetFileDetailCivilRequest request2 = new ca.bc.gov.open.pcss.civil.GetFileDetailCivilRequest();
 
-        request2.setAppearanceId(TestHelpers.REQUEST_AGENCY_IDENTIFIER_ID);
+        request2.setRequestPartId(TestHelpers.REQUEST_PART_ID);
         request2.setRequestAgencyIdentifierId(TestHelpers.REQUEST_AGENCY_IDENTIFIER_ID);
 
-        request2.setAppearanceId(TestHelpers.CASE_2);
+        request2.setPhysicalFileId(TestHelpers.CASE_2);
 
-        request.setGetAppearanceCivilDocumentRequest(request2);
+        request.setGetFileDetailCivilRequest(request2);
 
-        GetAppearanceCivilDocumentResponse2 actual =  sut.getAppearanceCivilDocument(request);
+        GetFileDetailCivilResponse2 actual =  sut.getFileDetailCivil(request);
 
-        Assertions.assertEquals(TestHelpers.ERROR_RESPONSE_CD, actual.getGetAppearanceCivilDocumentResponse().getResponseCd());
-        Assertions.assertEquals(TestHelpers.ERROR_RESPONSE_MSG, actual.getGetAppearanceCivilDocumentResponse().getResponseMessageTxt());
-        Assertions.assertEquals(0, actual.getGetAppearanceCivilDocumentResponse().getDocument().size());
-
+        Assertions.assertEquals(TestHelpers.ERROR_RESPONSE_CD, actual.getGetFileDetailCivilResponse().getResponseCd());
+        Assertions.assertEquals(TestHelpers.ERROR_RESPONSE_MSG, actual.getGetFileDetailCivilResponse().getResponseMessageTxt());
 
     }
 
@@ -156,8 +152,8 @@ public class EndpointFileDetailCivilTest {
         response.setTrialremark(TRIALREMARK);
 
 
-        List<PartyData> partyDataList = new ArrayList<>();
-        PartyData partyData = new PartyData();
+        List<ExtendedPartyData> partyDataList = new ArrayList<>();
+        ExtendedPartyData partyData = new ExtendedPartyData();
         partyData.setPartyroletype(PARTYROLETYPE);
         partyData.setPartyid(BigDecimal.valueOf(Integer.valueOf(PARTYID)));
         partyData.setOrgnm(ORGNM);

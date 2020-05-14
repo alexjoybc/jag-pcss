@@ -2,7 +2,6 @@ package ca.bc.gov.open.pcss.ords.pcss.client.civil.models;
 
 import ca.bc.gov.open.pcss.ords.pcss.client.Keys;
 import ca.bc.gov.open.pcss.ords.pcss.client.api.model.CivilFileContentData;
-import ca.bc.gov.open.pcss.ords.pcss.client.api.model.PartyData;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -14,7 +13,7 @@ public class FileContentResponse extends CivilFileContentData implements Respons
 
     private BigDecimal responseCd;
 
-    private List<PartyData> partyData = new ArrayList<>();
+    private List<ExtendedPartyData> partyData = new ArrayList<>();
 
     public FileContentResponse() {
     }
@@ -42,7 +41,7 @@ public class FileContentResponse extends CivilFileContentData implements Respons
         this.responseCd = responseCd;
     }
 
-    public List<PartyData> getPartyData() {
+    public List<ExtendedPartyData> getPartyData() {
         return partyData;
     }
 
@@ -50,7 +49,7 @@ public class FileContentResponse extends CivilFileContentData implements Respons
         return new FileContentResponse(BigDecimal.valueOf(Integer.valueOf(Keys.DEFAULT_ERROR_RESPONSE_CD)), message);
     }
 
-    public void addAll(List<PartyData> partyData) {
+    public void addAll(List<ExtendedPartyData> partyData) {
         this.partyData.addAll(partyData);
     }
 

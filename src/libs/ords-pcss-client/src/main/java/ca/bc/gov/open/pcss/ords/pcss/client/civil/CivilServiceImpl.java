@@ -5,10 +5,13 @@ import ca.bc.gov.open.pcss.ords.pcss.client.api.handler.ApiException;
 import ca.bc.gov.open.pcss.ords.pcss.client.api.model.*;
 import ca.bc.gov.open.pcss.ords.pcss.client.civil.mappers.*;
 import ca.bc.gov.open.pcss.ords.pcss.client.civil.models.AppearanceDocumentResponse;
+import ca.bc.gov.open.pcss.ords.pcss.client.civil.models.ExtendedPartyData;
 import ca.bc.gov.open.pcss.ords.pcss.client.civil.models.FileContentResponse;
 import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class CivilServiceImpl implements CivilService {
@@ -26,8 +29,8 @@ public class CivilServiceImpl implements CivilService {
 
             AppearanceDocumentResponse result =
                     AppearanceDocumentResponseMapper.INSTANCE.toAppearanceDocumentResponse(this
-                    .pcssCivilApi
-                    .civilSearchFileAppearanceDocumentGet(appearanceId));
+                            .pcssCivilApi
+                            .civilSearchFileAppearanceDocumentGet(appearanceId));
 
             result.getData().stream().forEach(document -> {
                 if (StringUtils.isNotBlank(document.getDocumentid())) {
@@ -84,26 +87,69 @@ public class CivilServiceImpl implements CivilService {
             FileContentResponse response = FileContentResponseMapper.INSTANCE.toFileContentResponse(result,
                     firstItem.get());
 
-            CivilFileContentPartyResponse civilFileContentPartyResponse = getCivilFileContentParty(physicalFileId);
-
-            if(civilFileContentPartyResponse != null && civilFileContentPartyResponse.getResponseCd().equals(SUCCESS_RESPONSE_CODE))
-                response.addAll(civilFileContentPartyResponse.getData());
+            response.addAll(getPartyData(physicalFileId));
 
             return response;
 
 
         } catch (ApiException e) {
+
             return FileContentResponseMapper.INSTANCE.toFileContentResponse(e);
+
         }
 
     }
 
-    private CivilFileContentPartyResponse getCivilFileContentParty(String physicalFileId) {
+    private List<ExtendedPartyData> getPartyData(String physicalFileId) {
+
+        List<ExtendedPartyData> result = new ArrayList<>();
+
         try {
-            return this.pcssCivilApi.civilFileContentPartyGet(physicalFileId);
+
+            CivilFileContentPartyResponse civilFileContentPartyResponse =
+                    this.pcssCivilApi.civilFileContentPartyGet(physicalFileId);
+
+            if (civilFileContentPartyResponse != null
+                    && civilFileContentPartyResponse.getResponseCd().equals(SUCCESS_RESPONSE_CODE)) {
+
+                civilFileContentPartyResponse
+                        .getData()
+                        .stream()
+                        .forEach(
+                                partyData -> result
+                                        .add(ExtendedPartyDataMapper.INSTANCE.toExtendedPartyData(
+                                                partyData,
+                                                getCivilFileContentCounsel(partyData.getPartyid().toString()))));
+            }
+
         } catch (ApiException e) {
-            return CivilFileContentPartyResponseMapper.INSTANCE.toCivilFileContentPartyResponse(e);
+
         }
+
+        return result;
+
     }
+
+    private List<CivilFileContentCounselData> getCivilFileContentCounsel(String partyId) {
+
+        List<CivilFileContentCounselData> result = new ArrayList<>();
+
+        try {
+            CivilFileContentCounselResponse civilFileContentCounselResponse =
+                    this.pcssCivilApi.civilFileContentCounselGet(partyId);
+
+            if (civilFileContentCounselResponse != null && civilFileContentCounselResponse.getResponseCd().equals(SUCCESS_RESPONSE_CODE)) {
+                if (civilFileContentCounselResponse.getData() != null)
+                    result.addAll(civilFileContentCounselResponse.getData());
+            }
+
+        } catch (ApiException e) {
+
+        }
+
+        return result;
+
+    }
+
 
 }

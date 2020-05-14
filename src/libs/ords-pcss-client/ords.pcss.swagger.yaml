@@ -65,7 +65,7 @@ paths:
           schema:
             $ref: '#/definitions/civilFileContentCounselResponse'
       parameters:
-        - name: pi_party_id
+        - name: party_id
           in: query
           type: string
           description: Implicit parameter
