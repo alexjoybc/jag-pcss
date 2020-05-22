@@ -5,8 +5,9 @@ import ca.bc.gov.open.pcss.ords.pcss.client.api.handler.ApiException;
 import ca.bc.gov.open.pcss.ords.pcss.client.api.model.*;
 import ca.bc.gov.open.pcss.ords.pcss.client.civil.mappers.*;
 import ca.bc.gov.open.pcss.ords.pcss.client.civil.models.AppearanceDocumentResponse;
+import ca.bc.gov.open.pcss.ords.pcss.client.civil.models.ExtendedCivilFileContentData;
+import ca.bc.gov.open.pcss.ords.pcss.client.civil.models.ExtendedCivilFileContentDocumentData;
 import ca.bc.gov.open.pcss.ords.pcss.client.civil.models.ExtendedPartyData;
-import ca.bc.gov.open.pcss.ords.pcss.client.civil.models.FileContentResponse;
 import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
@@ -40,7 +41,9 @@ public class CivilServiceImpl implements CivilService {
                     if (documentIsssues.getResponseCd().equals(SUCCESS_RESPONSE_CODE)) {
                         document.addAll(documentIsssues.getData());
                     }
+
                 }
+
             });
 
             return result;
@@ -72,22 +75,24 @@ public class CivilServiceImpl implements CivilService {
     }
 
 
-    public FileContentResponse getFileDetailCivil(String physicalFileId) {
+    public ExtendedCivilFileContentData getFileDetailCivil(String physicalFileId) {
 
         try {
 
             CivilFileContentResponse result = this.pcssCivilApi.civilFileContentGet(physicalFileId);
 
-            if (result.getData() == null) return FileContentResponse.ErrorResponse("CivilFileContentData not found");
+            if (result.getData() == null) return ExtendedCivilFileContentData.ErrorResponse("CivilFileContentData not found");
 
             Optional<CivilFileContentData> firstItem = result.getData().stream().findFirst();
 
-            if (!firstItem.isPresent()) return FileContentResponse.ErrorResponse("CivilFileContentData not found");
+            if (!firstItem.isPresent()) return ExtendedCivilFileContentData.ErrorResponse("CivilFileContentData not found");
 
-            FileContentResponse response = FileContentResponseMapper.INSTANCE.toFileContentResponse(result,
+            ExtendedCivilFileContentData response = FileContentResponseMapper.INSTANCE.toFileContentResponse(result,
                     firstItem.get());
 
             response.addAll(getPartyData(physicalFileId));
+
+            response.addAllExtendedCivilFileContentDocumentData(getCivilFileContentDocument(physicalFileId));
 
             return response;
 
@@ -151,5 +156,47 @@ public class CivilServiceImpl implements CivilService {
 
     }
 
+    private List<ExtendedCivilFileContentDocumentData> getCivilFileContentDocument(String physicalFileId) {
+
+        List<ExtendedCivilFileContentDocumentData> result = new ArrayList<>();
+
+        try {
+            CivilFileContentDocumentResponse civilFileContentCounselResponse = this.pcssCivilApi.civilFileContentDocumentGet(physicalFileId); ;
+
+            if (civilFileContentCounselResponse != null && civilFileContentCounselResponse.getResponseCd().equals(SUCCESS_RESPONSE_CODE)) {
+                if (civilFileContentCounselResponse.getData() != null)
+                    civilFileContentCounselResponse.getData().stream().forEach(civilFileContentDocumentData -> {
+                        result.add(ExtendedCivilFileContentDocumentDataMapper.INSTANCE.toExtendedCivilFileContentDocumentData(civilFileContentDocumentData, getCivilFileContentDocumentSupport(civilFileContentDocumentData.getCivildocumentid())));
+                    });
+            }
+
+        } catch (ApiException e) {
+
+        }
+
+        return result;
+
+    }
+
+
+    private List<CivilFileContentDocumentSupportData> getCivilFileContentDocumentSupport(String civilDocumentId) {
+
+
+        List<CivilFileContentDocumentSupportData> result = new ArrayList<>();
+
+        try {
+            CivilFileContentDocumentSupportResponse civilFileContentDocumentSupportResponse = this.pcssCivilApi.civilFileContentDocumentSupportGet(civilDocumentId); ;
+
+            if (civilFileContentDocumentSupportResponse != null && civilFileContentDocumentSupportResponse.getResponseCd().equals(SUCCESS_RESPONSE_CODE)) {
+                if (civilFileContentDocumentSupportResponse.getData() != null)
+                    result.addAll(civilFileContentDocumentSupportResponse.getData());
+            }
+
+        } catch (ApiException e) {
+
+        }
+
+        return result;
+    }
 
 }

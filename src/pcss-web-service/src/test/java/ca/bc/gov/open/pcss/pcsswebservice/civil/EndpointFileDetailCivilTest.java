@@ -7,8 +7,8 @@ import ca.bc.gov.courts.xmlschema.pcss.common._1_0.CourtLevelType;
 import ca.bc.gov.courts.xmlschema.pcss.common._1_0.LeftRightType;
 import ca.bc.gov.open.pcss.ords.pcss.client.api.PcssCivilApi;
 import ca.bc.gov.open.pcss.ords.pcss.client.civil.CivilService;
+import ca.bc.gov.open.pcss.ords.pcss.client.civil.models.ExtendedCivilFileContentData;
 import ca.bc.gov.open.pcss.ords.pcss.client.civil.models.ExtendedPartyData;
-import ca.bc.gov.open.pcss.ords.pcss.client.civil.models.FileContentResponse;
 import org.junit.jupiter.api.*;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -133,9 +133,9 @@ public class EndpointFileDetailCivilTest {
     }
 
 
-    private FileContentResponse getFakeFileDetailCivilResponse() {
+    private ExtendedCivilFileContentData getFakeFileDetailCivilResponse() {
 
-        FileContentResponse response = new FileContentResponse();
+        ExtendedCivilFileContentData response = new ExtendedCivilFileContentData();
 
         response.setResponseCd(BigDecimal.valueOf(Integer.valueOf(TestHelpers.SUCCESS_RESPONSE_CD)));
         response.setResponseMsg(TestHelpers.SUCCESS_RESPONSE_MSG);
@@ -169,9 +169,9 @@ public class EndpointFileDetailCivilTest {
 
     }
 
-    private FileContentResponse getFakeErrorFileDetailCivilResponse() {
+    private ExtendedCivilFileContentData getFakeErrorFileDetailCivilResponse() {
 
-        FileContentResponse response = new FileContentResponse();
+        ExtendedCivilFileContentData response = new ExtendedCivilFileContentData();
 
         response.setResponseCd(BigDecimal.valueOf(Integer.valueOf(TestHelpers.ERROR_RESPONSE_CD)));
         response.setResponseMsg(TestHelpers.ERROR_RESPONSE_MSG);

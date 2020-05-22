@@ -6,6 +6,11 @@ import java.math.BigDecimal;
 
 public class TestHelpers {
 
+
+    public static String testCase(String name) {
+        return "CASE_" + name;
+    }
+
     public static final String CASE_1 = "CASE_1";
     public static final String CASE_2 = "CASE_2";
     public static final String CASE_3 = "CASE_3";

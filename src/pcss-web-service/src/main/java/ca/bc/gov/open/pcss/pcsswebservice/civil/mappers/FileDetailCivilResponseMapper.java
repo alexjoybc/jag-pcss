@@ -2,12 +2,12 @@ package ca.bc.gov.open.pcss.pcsswebservice.civil.mappers;
 
 import ca.bc.gov.open.pcss.civil.GetFileDetailCivilResponse;
 import ca.bc.gov.open.pcss.civil.ObjectFactory;
-import ca.bc.gov.open.pcss.ords.pcss.client.civil.models.FileContentResponse;
+import ca.bc.gov.open.pcss.ords.pcss.client.civil.models.ExtendedCivilFileContentData;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(uses= { ObjectFactory.class, Party3Mapper.class } )
+@Mapper(uses= { ObjectFactory.class, Party3Mapper.class, Document3Mapper.class } )
 public interface FileDetailCivilResponseMapper {
 
     FileDetailCivilResponseMapper INSTANCE = Mappers.getMapper( FileDetailCivilResponseMapper.class );
@@ -24,6 +24,7 @@ public interface FileDetailCivilResponseMapper {
     @Mapping(target = "trialRemarkTxt", source = "trialremark")
     @Mapping(target = "commentToJudgeTxt", source = "commenttojudgetxt")
     @Mapping(target = "party", source = "partyData")
-    GetFileDetailCivilResponse toGetFileDetailCivilResponse(FileContentResponse fileContentResponse);
+    @Mapping(target = "document", source = "extendedCivilFileContentDocumentDataList")
+    GetFileDetailCivilResponse toGetFileDetailCivilResponse(ExtendedCivilFileContentData extendedCivilFileContentData);
 
 }

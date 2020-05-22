@@ -2,7 +2,7 @@ package ca.bc.gov.open.pcss.ords.pcss.client.civil;
 
 import ca.bc.gov.open.pcss.ords.pcss.client.api.model.SearchFileAppearanceResourcesResponse;
 import ca.bc.gov.open.pcss.ords.pcss.client.civil.models.AppearanceDocumentResponse;
-import ca.bc.gov.open.pcss.ords.pcss.client.civil.models.FileContentResponse;
+import ca.bc.gov.open.pcss.ords.pcss.client.civil.models.ExtendedCivilFileContentData;
 
 public interface CivilService {
 
@@ -10,6 +10,6 @@ public interface CivilService {
 
     SearchFileAppearanceResourcesResponse getAppearanceCivilResource(String appearanceId);
 
-    FileContentResponse getFileDetailCivil(String physicalFileId);
+    ExtendedCivilFileContentData getFileDetailCivil(String physicalFileId);
 
 }

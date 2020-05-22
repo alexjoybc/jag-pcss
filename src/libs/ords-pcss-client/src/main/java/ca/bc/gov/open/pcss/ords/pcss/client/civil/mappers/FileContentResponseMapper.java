@@ -4,7 +4,7 @@ import ca.bc.gov.open.pcss.ords.pcss.client.Keys;
 import ca.bc.gov.open.pcss.ords.pcss.client.api.handler.ApiException;
 import ca.bc.gov.open.pcss.ords.pcss.client.api.model.CivilFileContentData;
 import ca.bc.gov.open.pcss.ords.pcss.client.api.model.CivilFileContentResponse;
-import ca.bc.gov.open.pcss.ords.pcss.client.civil.models.FileContentResponse;
+import ca.bc.gov.open.pcss.ords.pcss.client.civil.models.ExtendedCivilFileContentData;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -26,10 +26,10 @@ public interface FileContentResponseMapper {
     @Mapping(target = "rightroledsc", source="civilFileContentData.rightroledsc")
     @Mapping(target = "trialremark", source="civilFileContentData.trialremark")
     @Mapping(target = "commenttojudgetxt", source="civilFileContentData.commenttojudgetxt")
-    FileContentResponse toFileContentResponse(CivilFileContentResponse civilFileContentResponse, CivilFileContentData civilFileContentData);
+    ExtendedCivilFileContentData toFileContentResponse(CivilFileContentResponse civilFileContentResponse, CivilFileContentData civilFileContentData);
 
     @Mapping(target = "responseMsg", source = "responseBody")
     @Mapping(target = "responseCd", constant = Keys.DEFAULT_ERROR_RESPONSE_CD)
-    FileContentResponse toFileContentResponse(ApiException apiException);
+    ExtendedCivilFileContentData toFileContentResponse(ApiException apiException);
 
 }

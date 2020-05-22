@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FileContentResponse extends CivilFileContentData implements ResponseBase {
+public class ExtendedCivilFileContentData extends CivilFileContentData implements ResponseBase {
 
     private String responseMsg;
 
@@ -15,10 +15,12 @@ public class FileContentResponse extends CivilFileContentData implements Respons
 
     private List<ExtendedPartyData> partyData = new ArrayList<>();
 
-    public FileContentResponse() {
+    private List<ExtendedCivilFileContentDocumentData> extendedCivilFileContentDocumentDataList = new ArrayList<>();
+
+    public ExtendedCivilFileContentData() {
     }
 
-    private FileContentResponse(BigDecimal responseCd, String responseMsg) {
+    private ExtendedCivilFileContentData(BigDecimal responseCd, String responseMsg) {
         this.responseMsg = responseMsg;
         this.responseCd = responseCd;
     }
@@ -45,12 +47,22 @@ public class FileContentResponse extends CivilFileContentData implements Respons
         return partyData;
     }
 
-    public static FileContentResponse ErrorResponse(String message) {
-        return new FileContentResponse(BigDecimal.valueOf(Integer.valueOf(Keys.DEFAULT_ERROR_RESPONSE_CD)), message);
+    public List<ExtendedCivilFileContentDocumentData> getExtendedCivilFileContentDocumentDataList() {
+        return extendedCivilFileContentDocumentDataList;
     }
 
     public void addAll(List<ExtendedPartyData> partyData) {
         this.partyData.addAll(partyData);
     }
+
+    public void addAllExtendedCivilFileContentDocumentData(List<ExtendedCivilFileContentDocumentData> extendedCivilFileContentDocumentDataList) {
+        this.extendedCivilFileContentDocumentDataList.addAll(extendedCivilFileContentDocumentDataList);
+    }
+
+    public static ExtendedCivilFileContentData ErrorResponse(String message) {
+        return new ExtendedCivilFileContentData(BigDecimal.valueOf(Integer.valueOf(Keys.DEFAULT_ERROR_RESPONSE_CD)), message);
+    }
+
+
 
 }
